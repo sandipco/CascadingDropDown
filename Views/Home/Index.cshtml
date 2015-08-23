@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section scripts { 
+    <script type="text/javascript">
+        var onCountrySuccess = function (data) {
+            var items = "<option>---------------------</option>";
+            $.each(data, function (i, country) {
+                items += "<option value='" + country.Value + "'>" + country.Text + "</option>";
+            });
+            $("#Countries").html(items);
+        };
+
+        var onStateSuccess = function (data) {
+            var items = "<option>---------------------</option>";
+            $.each(data, function (i, state) {
+                items += "<option value='" + state.Value + "'>" + state.Text + "</option>";
+            });
+            $("#States").html(items);
+        }
+
+        $(function () {
+            $.getJSON("/Home/Countries/List", onCountrySuccess);
+
+        $("#Countries").change(function () {
+                $.getJSON("/Home/States/List/" + $("#Countries > option:selected").attr("value"), onStateSuccess);
+            });
+        });
+    </script>
+}
+
+<h1>@ViewBag.Title</h1>
+
+@using (Html.BeginForm())
+{
+    <label for="Countries">Countries</label>
+    <select id="Countries" name="Countries"></select>
+    <br /><br />
+    <label for="States">States</label>
+    <select id="States" name="States"></select>
+    <br /><br />
+    <input type="submit" value="Submit" />
+}

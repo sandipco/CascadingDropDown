@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "LoadCountries";
+}
+@section scripts { 
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/jquery-1.8.2.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Dropdownlist Selectedchange event
+        $("#Country").change(function () {
+            $("#State").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetStates")',
+                dataType: 'json',
+                data: { id: $("#Country").val() },
+                success: function (states) {
+                    $.each(states, function (i, state) {
+                    $("#State").append('<option value="' + state.Value + '">' +
+                         state.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+
+
+        $("#State").change(function () {
+            $("#city").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetCity")',
+                dataType: 'json',
+                data: { id: $("#State").val() },
+                success: function (cities) {
+                    $.each(cities, function (i, city) {
+                        $("#city").append('<option value="'+ city.Value + '">'+ city.Text + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex);
+                }
+            });
+            return false;
+        })
+    });
+</script>
+    }
+<h2>LoadCountries</h2>
+@using (Html.BeginForm())
+{
+    @Html.DropDownList("Country", ViewData["country"] as List<SelectListItem>)
+    @Html.DropDownList("State", new SelectList(string.Empty, "Value", "Text"), "Please select a State", new { style = "width:250px", @class = "dropdown1" })
+    @Html.DropDownList("city", new SelectList(string.Empty, "Value", "Text"), "Please select a city", new { style = "width:250px", @class = "dropdown1" })
+}
